@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Generatore Schede Allenamento</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, sans-serif; background: #f5f5f5; color: #1a1a1a; min-height: 100vh; padding: 2rem 1rem; }
+    .container { max-width: 600px; margin: 0 auto; background: white; border-radius: 16px; padding: 2rem; box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
+    h1 { font-size: 22px; font-weight: 600; margin-bottom: 6px; }
+    .subtitle { font-size: 14px; color: #666; margin-bottom: 2rem; }
+    label { font-size: 13px; color: #555; display: block; margin-bottom: 6px; margin-top: 14px; }
+    input, select, textarea { width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; background: white; color: #1a1a1a; }
+    textarea { min-height: 72px; resize: vertical; }
+    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .livelli { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 6px; }
+    .livello-btn { border: 1px solid #ddd; border-radius: 8px; padding: 10px; text-align: center; cursor: pointer; font-size: 13px; transition: all 0.15s; user-select: none; }
+    .livello-btn.selected { background: #1a1a1a; color: white; border-color: #1a1a1a; }
+    .btn { width: 100%; padding: 13px; font-size: 15px; font-weight: 600; background: #1a1a1a; color: white; border: none; border-radius: 10px; cursor: pointer; margin-top: 24px; transition: opacity 0.15s; }
+    .btn:hover { opacity: 0.85; }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-secondary { background: white; color: #1a1a1a; border: 1px solid #ddd; margin-top: 12px; font-weight: 500; }
+    .error { font-size: 13px; color: #c0392b; background: #fdf0ef; border: 1px solid #f5c6c2; border-radius: 8px; padding: 10px 12px; margin-top: 14px; display: none; }
+    .loading { text-align: center; padding: 3rem 0; display: none; }
+    .loading p { font-size: 14px; color: #666; margin-top: 12px; }
+    .dots { font-size: 28px; letter-spacing: 4px; color: #aaa; }
+    .result { display: none; }
+    .result-box { background: #f9f9f9; border: 1px solid #eee; border-radius: 12px; padding: 1.25rem; font-size: 14px; line-height: 1.8; white-space: pre-wrap; color: #1a1a1a; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>La tua scheda di allenamento</h1>
+    <p class="subtitle">Compila i campi e ricevi una scheda personalizzata</p>
+
+    <div id="form-section">
+      <div class="grid2">
+        <div>
+          <label>Età</label>
+          <input type="number" id="eta" placeholder="es. 25" min="10" max="80" />
+        </div>
+        <div>
+          <label>Sesso</label>
+          <select id="sesso">
+            <option value="">Seleziona</option>
+            <option value="uomo">Uomo</option>
+            <option value="donna">Donna</option>
+            <option value="preferisco non specificare">Preferisco non specificare</option>
+          </select>
+        </div>
+      </div>
+
+      <label>Livello di esperienza</label>
+      <div class="livelli">
+        <div class="livello-btn" data-val="principiante">Principiante</div>
+        <div class="livello-btn" data-val="intermedio">Intermedio</div>
+        <div class="livello-btn" data-val="avanzato">Avanzato</div>
+      </div>
+
+      <label>Obiettivo principale</label>
+      <select id="obiettivo">
+        <option value="">Seleziona</option>
+        <option value="dimagrimento e perdita di grasso">Dimagrimento</option>
+        <option value="aumento massa muscolare">Massa muscolare</option>
+        <option value="forza e potenza">Forza</option>
+        <option value="resistenza e condizione fisica">Resistenza</option>
+        <option value="benessere generale e salute">Benessere generale</option>
+        <option value="tonificazione">Tonificazione</option>
+      </select>
+
+      <div class="grid2">
+        <div>
+          <label>Giorni a settimana</label>
+          <select id="giorni">
+            <option value="">Seleziona</option>
+            <option value="2">2 giorni</option>
+            <option value="3">3 giorni</option>
+            <option value="4">4 giorni</option>
+            <option value="5">5 giorni</option>
+            <option value="6">6 giorni</option>
+          </select>
+        </div>
+        <div>
+          <label>Durata sessione</label>
+          <select id="durata">
+            <option value="">Seleziona</option>
+            <option value="30 minuti">30 min</option>
+            <option value="45 minuti">45 min</option>
+            <option value="60 minuti">60 min</option>
+            <option value="75 minuti">75 min</option>
+            <option value="90 minuti">90 min</option>
+          </select>
+        </div>
+      </div>
+
+      <label>Attrezzatura disponibile</label>
+      <select id="attrezzatura">
+        <option value="">Seleziona</option>
+        <option value="palestra completa con macchine e pesi liberi">Palestra completa</option>
+        <option value="manubri e barra a casa">Manubri/barra a casa</option>
+        <option value="solo corpo libero, nessun attrezzo">Solo corpo libero</option>
+        <option value="corpo libero e sbarra">Corpo libero + sbarra</option>
+        <option value="bande elastiche e corpo libero">Bande elastiche</option>
+      </select>
+
+      <label>Limitazioni fisiche o note <span style="color:#aaa;">(opzionale)</span></label>
+      <textarea id="limitazioni" placeholder="es. mal di schiena, ginocchio operato, nessuna..."></textarea>
+
+      <div class="error" id="error-msg"></div>
+      <button class="btn" onclick="generaScheda()">Genera la mia scheda →</button>
+    </div>
+
+    <div class="loading" id="loading-section">
+      <div class="dots" id="dots">···</div>
+      <p>Sto creando la tua scheda personalizzata...</p>
+    </div>
+
+    <div class="result" id="result-section">
+      <div class="result-box" id="result-content"></div>
+      <button class="btn btn-secondary" onclick="resetForm()">Crea una nuova scheda</button>
+    </div>
+  </div>
+
+  <script>
+    let livelloSelezionato = '';
+    document.querySelectorAll('.livello-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.livello-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        livelloSelezionato = btn.dataset.val;
+      });
+    });
+
+    let dotsInterval;
+    function animaDots() {
+      const el = document.getElementById('dots');
+      const f = ['·  ','·· ','···'];
+      let i = 0;
+      dotsInterval = setInterval(() => { el.textContent = f[i++ % 3]; }, 400);
+    }
+
+    async function generaScheda() {
+      const eta = document.getElementById('eta').value;
+      const sesso = document.getElementById('sesso').value;
+      const obiettivo = document.getElementById('obiettivo').value;
+      const giorni = document.getElementById('giorni').value;
+      const durata = document.getElementById('durata').value;
+      const attrezzatura = document.getElementById('attrezzatura').value;
+      const limitazioni = document.getElementById('limitazioni').value.trim();
+      const errEl = document.getElementById('error-msg');
+      errEl.style.display = 'none';
+
+      const mancanti = [];
+      if (!eta) mancanti.push('età');
+      if (!sesso) mancanti.push('sesso');
+      if (!livelloSelezionato) mancanti.push('livello');
+      if (!obiettivo) mancanti.push('obiettivo');
+      if (!giorni) mancanti.push('giorni');
+      if (!durata) mancanti.push('durata');
+      if (!attrezzatura) mancanti.push('attrezzatura');
+
+      if (mancanti.length > 0) {
+        errEl.textContent = 'Compila i seguenti campi: ' + mancanti.join(', ');
+        errEl.style.display = 'block';
+        return;
+      }
+
+      document.getElementById('form-section').style.display = 'none';
+      document.getElementById('loading-section').style.display = 'block';
+      animaDots();
+
+      try {
+        const res = await fetch('/api/genera', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ eta, sesso, livello: livelloSelezionato, obiettivo, giorni, durata, attrezzatura, limitazioni })
+        });
+        const data = await res.json();
+        clearInterval(dotsInterval);
+        document.getElementById('loading-section').style.display = 'none';
+        document.getElementById('result-section').style.display = 'block';
+        document.getElementById('result-content').textContent = data.scheda || 'Errore nella generazione.';
+      } catch (err) {
+        clearInterval(dotsInterval);
+        document.getElementById('loading-section').style.display = 'none';
+        document.getElementById('form-section').style.display = 'block';
+        errEl.textContent = 'Errore di connessione. Riprova.';
+        errEl.style.display = 'block';
+      }
+    }
+
+    function resetForm() {
+      document.getElementById('result-section').style.display = 'none';
+      document.getElementById('form-section').style.display = 'block';
+      document.getElementById('eta').value = '';
+      document.getElementById('sesso').value = '';
+      document.getElementById('obiettivo').value = '';
+      document.getElementById('giorni').value = '';
+      document.getElementById('durata').value = '';
+      document.getElementById('attrezzatura').value = '';
+      document.getElementById('limitazioni').value = '';
+      document.querySelectorAll('.livello-btn').forEach(b => b.classList.remove('selected'));
+      livelloSelezionato = '';
+    }
+  </script>
+</body>
+</html>
